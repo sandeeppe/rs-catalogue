@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -10,23 +5,16 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: SONAR
+ - group: SONAR
+ - name: APP_NAME
+   value: catalogue
+
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: ci-build-templates
 
 steps:
-- task: CmdLine@2
-  inputs:
-    script: 'npm install'
-  displayName: "NPM INSTALL"
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      curl  -O https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
-      unzip sonar-scanner-cli-4.4.0.2170-linux.zip
-      export PATH=$PATH:$(pwd)/sonar-scanner-4.4.0.2170-linux/bin
-- task: CmdLine@2
-  inputs:
-    script: |
-      export PATH=$PATH:$(pwd)/sonar-scanner-4.4.0.2170-linux/bin
-      sonar-scanner -Dsonar.projectKey=catalogue -Dsonar.sources=. -Dsonar.host.url=$(SONAR_URL)  -Dsonar.login=$(SONAR_TOKEN)
-  displayName: "SONAR SCAN"
+  - template: nodejs.yml@templates
